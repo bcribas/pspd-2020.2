@@ -15,6 +15,8 @@ O binário =simple-gsat-io-generator= é o programa utilizado para gerar
 os casos de teste, e o gabarito, que você usará como entrada para o
 seu =verificador=.
 
+Este repositório faz uso de /git-lfs/, verifique se o pacote está
+instalado (debian é git-lfs) antes de fazer o /git clone/.
 
 * Para gerar o conjunto de testes
 
@@ -57,11 +59,38 @@ ainda remove o conteúdo dos diretório =input/= e =output/=.
 
 * Mais casos de teste
 
-Você pode obter mais fórmulas no site https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
+Você pode obter mais fórmulas no site
+https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
 
 Basta colocar o arquivo da fórmula, com extensão =.cnf=, dentro do
 diretório =formulas/= e rodar o comando =make= (com as suas variações
 como TIMELIMIT e DEFAULTSEED, como explicado acima) para gerar os
 arquivos de entrada e gabarito.
+
+* Gerando entradas grandes
+
+Você pode gerar entradas maiores aumentando o timelimit do gerador,
+por exemplo:
+
+#+begin_src bash
+make dist-clean && make TIMELIMIT=120
+#+end_src
+ - com 120 segundos de timelimit, o diretório /output/ vai consumir
+   aproximadamente *30GB*.
+
+* Comparando resultador
+
+Para comparar resultados você deve invocar a diretiva /verificar/, por
+exemplo:
+
+#+begin_src bash
+make verificar BENCHMARKBINARY=./meuverificador
+#+end_src
+ - Se não passar a variável =BENCHMARKBINARY= o sistema utilizará o
+   /verificador/ padrão.
+
+Esta diretiva de verificação vai rodar todos os benchmarks (caso não
+tenham sido executados) e depois irá comparar os arquivos gerados pelo
+/verificador/ com o gabarito armazenado no diretorio =output/=
 
 - Prof. Bruno Ribas, Mar 2021
