@@ -9,13 +9,13 @@ endif
 
 INPUT=$(patsubst formulas/%.cnf,input/%,${FORMULAS})
 TESTRUN=$(patsubst formulas/%.cnf,benchmark/%,${FORMULAS})
+VERIFICARUN=$(patsubst benchmark/%,verificar/%,${TESTRUN})
 TIMELIMIT?=30
 DEFAULTSEED?=3000
 GSATGENERATOR=./simple-gsat-io-generator
 BENCHMARKBINARY?=$(GSATGENERATOR)
 
 all: $(INPUT)
-	@echo All DONE
 
 input/%: formulas/%.cnf
 	./simple-gsat-io-generator generator $(DEFAULTSEED) $^ $@ $(patsubst input/%,output/%,$@) $(TIMELIMIT)
@@ -28,9 +28,17 @@ benchmark: benchmarkdir all $(TESTRUN)
 
 benchmarkdir:
 	mkdir -p benchmark
+
+verificar/%: output/%
+	@echo "==== Comparando $^"
+	@diff -q -s $^ $(patsubst verificar/%,benchmark/%,$@)
+	@echo
+
+verificar: benchmark $(VERIFICARUN)
+
 clean:
 	rm -f benchmark/*
 dist-clean: clean
 	rm -f input/* output/*
 
-PHONY: all benchmark benchmarkdir clean dist-clean
+PHONY: all benchmark benchmarkdir clean dist-clean verificar
