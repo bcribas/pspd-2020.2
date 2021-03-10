@@ -1,0 +1,4 @@
+formulas/* filter=lfs diff=lfs merge=lfs -text
+input/* filter=lfs diff=lfs merge=lfs -text
+output/* filter=lfs diff=lfs merge=lfs -text
+simple-gsat-io-generator filter=lfs diff=lfs merge=lfs -text

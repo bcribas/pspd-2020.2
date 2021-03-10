@@ -1,365 +1,67 @@
-#+TITLE: Boolean Constraint Propagator
-#+SUBTITLE: PSPD UnB-$\gamma$
+#+TITLE: Exemplos para o gerador
 
-# configuração interessante com alguns menus
-# #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-bigblow.setup
-# #+SETUPFILE: bootstrap/theme-bigblow.setup
-#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
+Este pacote vem com um conjunto simplificado de exemplos já gerados.
 
-# configuração interessante, mas parece mais um post
-# #+OPTIONS: toc:nil num:3 H:4 ^:nil pri:t
-# #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+Os testes gerados ficam no diretório =input/= e as soluções esperadas
+(gabaritos) estão armazenadas no diretório =output/=.
 
-#+HTML_HEAD: <style> #content{max-width:1800px;}</style>
-#+HTML_HEAD: <style> p{max-width:800px;}</style>
-#+HTML_HEAD: <style> li{max-width:800px;}</style>
+Você pode gerar os exemplos que estão faltando, mas isso pode consumir
+muito espaço em disco (mais de 12GB).
 
-# #+TOC: headlines 2
+Já no diretório =formulas/=, existem as fórmulas originais, em DIMACS
+CNF, utilizadas para gerar os testes para o seu verificador.
 
-* O início de uma história
+O binário =simple-gsat-io-generator= é o programa utilizado para gerar
+os casos de teste, e o gabarito, que você usará como entrada para o
+seu =verificador=.
 
-O problema mais incrível da computação é o da /Satisfatibilidade
-Booleana/, ou /SAT/ para os íntimos, onde temos que decidir uma
-valoração para um conjunto de variáveis Booleanas que torne uma
-fórmula verdadeira.
 
-A fórmula que estamos tratando possui somente conectivos lógicos
-$\land$ (e, conjunção) e $\lor$ (ou, disjunção), e literais de
-variáveis proposicionais.
+* Para gerar o conjunto de testes
 
-As variáveis proposicionais são denotadas por letras do alfabeto em
-minúsculas como $p,q,r$ ou por apenas um conjunto $x_1, ...,
-x_n$. Estas variáveis podem receber os valores verdade /verdadeiro/
-(também /V/, ou $1$) ou /falso/ (também, /F/ ou $0$). Os literais são
-a variável ou sua negação, denotada por um $\lnot$ , por exemplo
-$\lnot x_1$.
-
-A maneira mais comum de tratar este problema é se utilizando uma
-fórmula na /Forma Normal Conjuntiva/,FNC ou /CNF/ [do inglês]. Neste
-caso a fórmula é composta por diversas cláusulas unidas por
-conjunções.
-
-Uma *cláusula* $c$ é a disjunção de literais. Uma fórmula $\phi$ é a
-conjunção de cláusulas. Uma cláusula é dita /satisfeita/ quando pelo
-meno um de seus literais assumem o valor /V/ e /não-satisfeita/ quando
-todos os seus literais assumem o valor /F/.
-
-*Cláusula unitária* é uma cláusula representada por apenas um literal.
-
-*Literal puro* é o literal que aparece em apenas uma forma em toda a
- fórmula, ou seja, uma variável $x$ aparece apenas na forma $x$ ou
- $\lnot x$ na fórmula.
-
-O problema de satisfatibilidade consistem em decidir se existe uma
-valoração que torna a fórmula verdadeira, ou seja, uma atribuição de
-valores verdade para as variáveis da fórmula que tornem todas
-cláusulas satisfeitas e, portanto, a fórmula satisfeita.
-
-** Forma Normal Conjuntiva
-
-A Forma Normal Conjuntiva (Conjuctive Normal Form - CNF) é a classe de
-fórmulas da lógica proposicional que utiliza apenas os operadores
-lógicos de conjunção ($\land$), disjunção ($\lor$) e negação
-($\lnot$), sendo este último aplicável apenas sobre as variáveis
-proposicionais.
-
-A sua representação é um Grafo Direcionado Acíclido (DAG) de altura
-$2$, onde a raiz é o operador de conjunção ($\land$), o primeiro
-nínvel são os operadores de disjunção ($\lor$) e o segundo nível as
-forlhas, compostas por lietrais.
-
-A fórmula abaixo pode ser representada pelo DAG na Figura [[fig:cnf1]]:
-#+NAME: form:cnf1
-\begin{equation}
-(x_1 \lor x_2 ) \land ( x_1 \lor \lnot x_2 ) \land ( \lnot x_1 \lor \lnot x_2)
-\end{equation}
-
-#+begin_src dot :file cnf1.png :exports results
-  digraph cnf1 {
-	  raiz [label = "∧"];
-	  or1 [label = "∨"];
-	  or2 [label = "∨"];
-	  or3 [label = "∨"];
-	  nx2 [label = "¬x2"];
-	  nx1 [label = "¬x1"];
-	  { rank=same or1 or2 or3 }
-	  raiz -> or1;
-	  raiz -> or2;
-	  raiz -> or3;
-	  or1 -> x1;
-	  or1 -> x2;
-	  or2 -> x1;
-	  or2 -> nx2;
-	  or3 -> nx1;
-	  or3 -> nx2;
-  }
-#+end_src
-
-#+begin_center
-#+CAPTION: Diagrama de uma fóruma CNF
-#+NAME: fig:cnf1
-#+RESULTS: fig:cnf1
-[[file:cnf1.png]]
-#+end_center
-
-** Iniciando o trabalho
-
-O nosso trabalho consistirá no desenvolvimento de um /Propagador de
-valores Booleanos/, não se assuste! Vamos desenvolver em diversas
-etapas.
-
-A primeira etapa de desenvolvimento é o /Verificador de Valoração/, ou
-seja, vamos receber uma valoração completa para as variáveis de uma
-fórmula e devemos verificar se a valoração satisfaz a fórmula.
-
-#+begin_quote
-Neste vídeo fiz uma conversa com os alunos da disciplina, onde
-apresento o início do trabalho.
-#+begin_export html
-<center>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Yiw8q_M1TVE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-</center>
-#+end_export
-#+end_quote
-
-Nas próximas seções as etapas serão discutidas cuidadosamente.
-
-* O arquivo de entrada
-
-A entrada é composta por duas partes. A primeira é relacionada à
-fórmula, e; a segunda é relaciada às perguntas que devem ser
-respondidas.
-
-O formato das perguntas será diferente de acordo com o entregável do
-momento, no entanto, o formato da fórmula permanecerá sempre o mesmo.
-
-O arquivo de entrada será passado sempre pela entrada padrão e todas
-as suas respostas devem ser colocadas na saída padrão. /AKA/ /stdin/ e
-/stdout/.
-
-** Fórmula na /CNF/
-   <<sec:input-cnf>>
-
-A entrada da fórmula é composta por diversas linhas. A primeira linha
-é composta com por dois números inteiros $V$ e $C$ representando,
-respectivamente, o número de variáveis na fórmula e o número de
-cláusulas.
-
-Você deve esperar que $V > 1$ e que $C > 0$, já o limite superior é
-pouco conhecido, uma estimativa para o trabalho é que $V <= 2^{20}$ e
-$C <= 2^{27}$.
-
-As variáveis são indexadas pelo intervalo, fechado, inteiro
-$[1,V]$. Os literais aparecem na forma da variável (o número positivo)
-e o literal negado é representado pelo número negativo.
-
-Após a primeira linha existem $C$ linhas, cada uma contendo uma
-cláusula. Cada cláusula é composta por um conjunto de literais de
-variáveis da fórmula. Não acontecem literais repetidos, e nem
-tautologias (aparendo o literal positivo e negativo da mesma variável
-proposicional). A linha termina com $0$, indicando o fim da
-cláusula. $0$ não é uma variável proposicional.
-
-Exemplo de entrada, que representa o exemplo [[form:cnf1]]:
-#+begin_src
-2 3
-1 2 0
-1 -2 0
--1 -2 0
-#+end_src
-
-#+begin_quote
-Nada garante que os literais aparecerão numericamente ordenados nas cláusulas
-#+end_quote
-
-** Perguntas
-
-As perguntas que serão feitas ao seu programa seguirão feitos pela
-entrada padrão e possuirão diversas linhas. O formato dependerá do
-tipo de teste a ser realizado.
-
-Nas seções seguintes trataremos dos casos de entrada.
-
-* Verificador
-
-O primeiro programa que esperamos que seja desenvolvido é o
-verificador de valoração.
-
-O verificador de valoração recebe uma fórmula na CNF (veja a seção
-[[sec:input-cnf]]) e depois receberá um conjunto de valoração a ser
-verificada.
-
-O conjunto de valoração não será, necessariamente, fornecido
-antecipadamente, ou seja, é possível que a próxima valoração seja
-gerada apenas após a verificação da anterior. Deixando, portanto, o
-verificador como um programa interativo com o corretor.
-
-** Para que serve o verificador?
-
-A ideia do verificador é ser o auxiliar do algoritmo WalkSAT, um
-resolvedor SAT de busca local.
-
-Este algoritmo gera uma valoração aleatória para as variáveis
-proposicionais e caso ela não satisfaça a fórmula, ele procura
-inverter a valoração de algumas variáveis, e tenta isso algumas vezes.
-
-#+begin_quote
-Os algoritmos GSAT e WalkSAT não são completos, isto é, não conseguem
-afirmar que a fórmula é UNSAT (quando não há uma valoração que
-satisfaça a fórmula) pois ele não testa todas as possibilidades.
-#+end_quote
-
-Como o WalkSAT gera diversas tentativas, é importante que o
-verificador seja rápido, para evitar muita espera na tarefa de
-identificar quais cláusulas ficaram falsas.
-
-** Entrada e Saída
-
-A entrada é composta primeiramente pela fórmula em CNF e depois
-haverão um conjunto de linhas, onde cada linha possui a valoração de
-cada variável em sua forma verdadeira, ou seja havendo o numeral $1$
-siginifica que a variável proposicional $1$ é verdadeira, já $-2$
-significa que a variável proposicional $2$ é falsa, e a sua negação
-que é verdadeira.
-
-A valoração é composta por dois tipos de linhas, as linhas =full= e as
-linhas =flip=.
-
-As linhas do tipo =full= possuem a string =full= no início e seguem
-com $V$ numerais ordenados pela sua forma absoluta, (ex: =-1 -2 3 4 -5
-6 7 -8=). Cada numeral representa o literal valorado como /Verdadeiro/.
-
-As linhas do tipo =flip= modificam somente uma variável proposicional,
-ou seja, se a variável for verdadeira a sua negação passa a ser
-verdadeira. Esta possui a string =flip= seguida do indexado da
-variável que deve ter sua valoração trocada (sempre será um número
-positivo).
-
-
-Exemplo de entrada:
-
-#+INCLUDE: "~/unb/teaching/pspd/io-exemplos/input/simples" src
-
-#+begin_quote
-No exemplo acima iniciamos com a valoração: =-1 -2=
-
-A seguir acontece um /flip/ em =2=, ficando a valoração: =-1 2=
-
-Depois acontece um /flip/ em =1=, ficando: =1 2=
-
-E por fim mais um /flip/ em =2=, finalizando a entrada com a
-valoração: =1 -2=
-#+end_quote
-
-A saída é composta por diversas linhas podendo ser:
- - =SAT=, quando a fórmula é satisfeita, ou seja, todas cláusulas
-   foram satisfeitas.
- - lista das cláusulas que não foram satisfeitas, a primeira cláusula
-   possui indexador $0$. Segundo o formato:
-   =[K clausulas falsas]= seguido dos identificadores de cada
-   clásula. Onde $K$ é a quantidade de clásulas falsas.
- - lista de literais falsos, sem repetição e ordenados por quantidade
-   de vezes que aparecem nas cláusulas, das cláusulas não satisfeitas
-   seguindo o formato =[lits]= seguido dos identificadores dos
-   literais que estão falsos.
-   - Desempate (caso a ocorrência em clásulas tenha a mesma contagem)
-     utilizando um algoritmo de ordenação estável.
-
-Exemplo de saída para o exemplo acima:
-
-#+INCLUDE: "~/unb/teaching/pspd/io-exemplos/output/simples" src
-
-** Executando os testes
-
-Para efetuar os testes você pode rodar um comando parecido com:
+Você pode executar o comando abaixo para gerar todos os casos de teste
+empacotados.
 
 #+begin_src bash
-time ./meuverificador < arquivo.in
+  make TIMELIMIT=10
 #+end_src
 
-Da maneira acima você irá executar o seu verificador e irá identificar
-em quanto tempo o seu programa executa.
+O parâmetro TIMELIMIT indica o tempo máximo que o gerador de testes
+pode ficar rodando, em alguns exemplos ele pode gerar uma entrada
+gigantesca. O TIMELIMIT padrão é 30 segundos
 
-Compile o seu programa utilizando no mínimo as flags abaixo:
-#+begin_src
--O2 -static
+Você também pode passar a variável =DEFAULTSEED=, sendo uma semente
+para o gerador aleatório, o padrão é $3000$.
+
+* Calculando o benchmark
+
+Você pode invocar o =make= com o parâmetro =benchmark=, desta forma
+ele irá executar o benchmark padrão, para todos arquivos dentro do
+diretório =input/=.
+
+Você também poderá executar o =benchmark= usando a sua solução
+passando a variável =BENCHMARKBINARY=, por exemplo:
+
+#+begin_src bash
+make benchmark BENCHMARKBINARY=./meuverificador
 #+end_src
- - Se a sua implementação utiliza a =math.h=, passe =-lm=, e quando
-   for utilizar /threads/, passe =-lpthread=. Se for utilizar =OpenMP=
-   não esqueça que o parâmetro é =-fopenmp=.
+ - naturalmente trocando a string =./meuverificador= para o path do
+   seu programa verificador.
 
-** Arquivos de exemplo
+* Clean
 
-Alguns arquivos de exemplo são fornecidos, tanto o arquivo de entrada
-quanto a saída esperada (gabarito), esses são conjuntos pequenos e
-podem ser baixados [[./io-exemplos.tar.zst][AQUI]]
- - O arquivo está compactado com o algoritmo =zstd=, a maioria das
-   distribuições GNU/Linux possuem o pacote =zstd=.
- - Leia o arquivo =README.org= dentro do pacote para explicações de
-   como utilizá-lo.
+A diretiva =make clean= remove os arquivos de saída gerados pelo
+=benchmark=
 
-*** Mais arquivos de exemplo
-Em tese você pode utilizar qualquer fórmula do padrão DIMACS, em CNF,
-para gerar os arquivos de entrada e o gabarito com o gerador.
+Já a diretiva =make dist-clean= remove tudo que a =clean= remove e
+ainda remove o conteúdo dos diretório =input/= e =output/=.
 
-Você pode baixar mais exemplo pelo site abaixo:
- - https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
+* Mais casos de teste
 
-** Entregas e Prazo
+Você pode obter mais fórmulas no site https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
 
-*** O que devo refletir?
-   1. Quanto tempo a sua implementação demora para os casos fornecidos
-   2. Como é feita a otimização para paralelizar o algoritmo?
-      - Como o desempenho é alterado rodando o programa com $2$, $4$,
-        $6$, $8$ e $12$ threads?
-      - O desempenho é modificado quando o arquivo de saída é
-        redirecionado para =/dev/null=?
-	- E quando a impressão é comentada?
-	- Qual o impacto da leitura do arquivo de entrada no tempo global?
-   3. A partir de qual tamanho de fórmula a paralelização faz
-      diferença?
+Basta colocar o arquivo da fórmula, com extensão =.cnf=, dentro do
+diretório =formulas/= e rodar o comando =make= (com as suas variações
+como TIMELIMIT e DEFAULTSEED, como explicado acima) para gerar os
+arquivos de entrada e gabarito.
 
-
-*** Entregando
-    - Gere um relatório simples contendo gráficos de desempenho para
-      as diversas execuções
-      - Coloque a comparação da sua solução com a implementação
-        sequencial fornecida;
-    - Avalie o gargalo do seu algoritmo
-      - O maior problema acontece nas estruturas de controle (ex:semáforos)?
-      - O tempo de leitura da entrada é perceptível?
-      - Isole o tempo de execução da função que avalia a verificação
-        (descontando o tempo de leitura da fórmula e de cada valoração
-        /full/ e /flips/)
-    - Qual é a complexidade do seu /verificador/?
-      - O seu algoritmo aproveita resultados parciais para avaliar
-        /flips/ mais rapidamente?
-
-*** Prazo
-    SCHEDULED: <2021-03-31 Wed>
-    - O prazo para este item (/verificador/) é *31 de março de 2021*
-    - Esta atividade conta como uma atividade somativa e deve ser
-      feita de acordo com a separação de duplas marcadas pelo /parieitor/
-
-* TODO BCP
-
-Em construção...
-
-* Duplas definidas pelo /Parieitor/
-
-| Nome1                                    | Nome2                               |
-| Adrianne Alves da Silva                  | Matheus Roberto Alves da Silva      |
-| Alexandre Miguel Rodrigues Nunes Pereira | Romulo Vinicius de Souza            |
-| Daniel Maike Mendes Goncalves            | Jôberth Rogers Tavares Costa        |
-| Djorkaeff Alexandre Vilela Pereira       | Gabriela Barrozo Guedes             |
-| Eduardo Vieira Lima                      | Samuel de Souza Buters Pereira      |
-| Eugenio Sales Siqueira                   | Lucas Maciel Aguiar                 |
-| Gabriel Marques Tiveron                  | Luis Henrique Pereira Taira         |
-| Gustavo Marques Lima                     | Ivan Diniz Dobbin                   |
-| Joao Gabriel Rossi de Borba              | João Matheus de Sousa Rodrigues     |
-| Joao Vitor Morandi Lemos                 | Jose Aquiles Guedes de Rezende      |
-| Lucas Alexandre Fernandes Martins        | Matheus de Cristo Doreia Estanislau |
-| Marcelo Araujo dos Santos                | Renan Cristyan Araujo Pinheiro      |
-| Victor Hugo Dias Coelho                  | sozinho                             |
-| Vitor Meireles Oliveira                  | nao marcou (sozinho*)               |
-
+- Prof. Bruno Ribas, Mar 2021
