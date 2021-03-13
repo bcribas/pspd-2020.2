@@ -268,6 +268,8 @@ A saída é composta por diversas linhas podendo ser:
    de vezes que aparecem nas cláusulas, das cláusulas não satisfeitas
    seguindo o formato =[lits]= seguido dos identificadores dos
    literais que estão falsos.
+   - (Sat, 13 Mar 2021 12:35:40 -0300) Os literais devem estar
+     ordenados do que ocorre mais vezes para o que ocorre menos vezes
    - O desempate dos literais com a mesma contagem deve ser feito
      preferindo a variável de maior grandeza, ou seja, havendo empate
      entre o literal $-2$ com 1 ocorrência e $1$ com uma ocorrência,
