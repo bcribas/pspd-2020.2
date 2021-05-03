@@ -1,0 +1,14 @@
+* DIRETÓRIO DE SOLUÇÕES
+
+Neste diretório são colocadas todas as soluções dos alunos.
+
+As soluções entram por PULL REQUEST(PR) neste repositório. O PR deve
+ser feito pelos alunos.
+
+O diretório ao qual os trabalhos devem ser colocados devem ter relação
+com os membros da dupla.
+
+Dentro do diretório deve haver o(s) código(s) da solução, o README
+(org ou md) com o relatório do trabalho e arquivos adicionais (por
+exemplo as imagens do relatório). E também uma receita (via Makefile)
+que compile o código corretamente.
