@@ -8,14 +8,14 @@
 
 ## Relatório
 ### Gráficos
-![](https://i.imgur.com/PUnbBbr.png)
+![](./resources/graph1.png)
 Tempo de execução em relação aos arquivos de teste
 
-![](https://i.imgur.com/ZojXUGd.png)
+![](./resources/graph2.png)
 Tempo de execução em relação aos arquivos de teste com diferente número de threads
 
 
-![](https://i.imgur.com/v7H5g8l.png)
+![](./resources/graph3.png)
 Tempo de execução em relação aos arquivos de teste com diferentes métodos de I/O
 
 ### Algoritmos
