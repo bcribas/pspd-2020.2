@@ -29,6 +29,8 @@
 
 ![Grafico1](img/grafico1.png)
 
+Para ver o histórico de commits do trabalho, acesse o [repositório original](https://github.com/aquiles23/Boolean-Constraint-Propagator).
+
 ### Requisitos
 
 - Python3
