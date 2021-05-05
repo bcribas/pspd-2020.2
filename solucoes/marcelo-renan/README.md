@@ -248,8 +248,24 @@ Como é feita a otimização para paralelizar o algoritmo?
       para chegar a uma conclusão.
 
 - O desempenho é modificado quando o arquivo de saída é redirecionado para /dev/null?
+
+      Ao direcionar o arquivo de saida para /dev/null, o programa sequencial
+      tem uma melhora significativa. O aqruivo flat75-90 responde em torno
+      de 7.8s
+
   - E quando a impressão é comentada?
+      
+        Com a impressão comentada, o programa sequencial
+        tem uma pequena melhora no desempenho. Por exemplo
+        o tempo de execução do arquivo flat75-90 fica em
+        torno de 7.2s
+
   - Qual o impacto da leitura do arquivo de entrada no tempo global?
+
+        A leitura inicial das cláusulas não tem impacto significativo
+        no desempenho, levando em torno de 0.002s. Esse
+        tempo é ainda menor ao ler os avaliadores, full e flip, então
+        concluimos que a leitura não é um problema.
 
 A partir de qual tamanho de fórmula a paralelização faz diferença?
 
@@ -266,6 +282,10 @@ Avalie o gargalo do seu algoritmo
       o que impacta negativamente no desempenho.
 
 - O tempo de leitura da entrada é perceptível?
+           
+      Como dito anteriormente, não, a leitura de entrada
+       não é perceptivel, ela ocorre de maneira rápida.
+
 - Isole o tempo de execução da função que avalia a verificação (descontando o tempo de leitura da fórmula e de cada valoração full e flips)
 
 Qual é a complexidade do seu verificador?
