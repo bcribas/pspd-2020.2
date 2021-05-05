@@ -11,6 +11,19 @@
 
 Esse projeto busca solucionar o problema do algoritmo de ***Verificador de Valoração***, em que o programa recebe um conjunto de cláusulas valoração para as variáveis de uma fórmula, bem como diversos comandos que alteram o estado das variáveis, tendo como objetivo verificar se as valorações satisfazem as fórmulas de cada cláusula, imprimindo dados a respeito das cláusulas não satisfeitas, como o índice dessas cláusulas e a quantidade de variáveis falsas em uma valoração não satisfeita. Os detalhes do problema formulado podem ser obtidos em [https://www.brunoribas.com.br/pspd/2020-2/](https://www.brunoribas.com.br/pspd/2020-2/).
 
+## **Execução**
+
+```bash
+# Entre na pasta do programa que contém o Makefile
+$ cd pspd-SAT/
+
+# Para compilar o programa, basta utilizar o make
+$ make
+
+# O programa ficará esperando o input, no formato do arquivo input_simples
+$ make run
+```
+
 
 ## **Código**
 
@@ -18,7 +31,7 @@ Os diagramas a seguir trazem uma representação dos códigos do arquivo ```main
 
 ### **Vetor de Variáveis**
 
-Para armazenar o estado booleano das variáveis não negadas e a contagem de aparecimento de cada variável em cláusulas falsas, respectivamente, a estrutura utilizada consiste em um vetor de par (booleano e long long).
+Para armazenar o estado booleano das variáveis não negadas e a contagem de aparecimento de cada variável em cláusulas falsas, respectivamente, a estrutura utilizada consiste em um vetor de par (booleano e inteiro).
 
 ![v-vector](./images/v-vector.png)
 
