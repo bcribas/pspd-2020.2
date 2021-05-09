@@ -7,6 +7,22 @@
 | Samuel de Souza Buters Pereira | 17/0114040 |
 
 ## Relatório
+
+### Sistema
+##### CPU: AMD Ryzen 5 3600X
+    - 6 cores, 12 threads
+    - Base clock: 3.8GHz
+    - Boost clock: 4.4GHz
+
+##### Mémoria: DDR4 - 16GBytes total
+    - Dual channel, 2 x 8GBytes
+    - Frequência: 3200mhz cada
+
+##### Armazenamento: SSD M.2
+    - Capacidade: 500GBytes
+    - Velocidade de leitura: 3500MB/s
+    - Velocidade de gravação: 1900MB/s
+
 ### Gráficos
 ![](./resources/graph1.png)
 Tempo de execução em relação aos arquivos de teste
