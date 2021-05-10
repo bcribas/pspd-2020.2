@@ -21,6 +21,9 @@ Para remover os binários da raíz, execute:
 
 > make clean
 
+## Desenvolvimento
+O projeto foi desenvolvido no repositório: https://github.com/Ed-vL/PSPD-SAT
+
 ## Relatório
 
 ### Sistema
@@ -58,4 +61,4 @@ O maior gargalo acontece na coordenação de threads para imprimir o resultado n
 As operações de I/O  causam grande impacto no desempenho do algoritmo.
 
 ### Complexidade
-Nosso algoritmo processa todo cláusulas para cada comando de forma paralelizada, assim para para n comandos e m cláusulas a complexidade é O(n*m)
+Nosso algoritmo processa todas as cláusulas para cada comando de forma paralelizada, assim para para n comandos e m cláusulas a complexidade é O(n*m)
