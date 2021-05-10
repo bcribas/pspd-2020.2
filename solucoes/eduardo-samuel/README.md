@@ -6,6 +6,21 @@
 | Eduardo Vieira Lima | 17/0102343 |
 | Samuel de Souza Buters Pereira | 17/0114040 |
 
+## Uso
+Para compilar a solução, execute:
+> make all
+> 
+Após o comando, a solução paralela e sequencial estarão compiladas nos binários, respectivamente, sequential.bin e parallel.bin <br>
+É possível compilar cada um individualmente com:
+
+> make sequential
+
+> make parallel
+
+Para remover os binários da raíz, execute:
+
+> make clean
+
 ## Relatório
 
 ### Sistema
